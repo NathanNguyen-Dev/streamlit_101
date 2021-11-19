@@ -6,7 +6,7 @@ import cv2
 
 PATH = 'media/AB_NYC_2019.csv'
 
-menu = ['Home', 'Read Data', 'Display Image', 'Show Video', 'Show Webcam', 'Play Audio', 'About Me']
+menu = ['Home', 'Read Data', 'Display Image', 'Show Video', 'Capture From Webcam', 'Play Audio', 'About Me']
 
 choice = st.sidebar.selectbox('What puppy can do?', menu)
 
@@ -83,19 +83,30 @@ elif choice=='Show Video':
     if video_uploaded!=None:
         st.video(video_uploaded)
 
-elif choice=='Show Webcam':
-    st.title('Open your webcam')
-    st.warning('Webcam show on local computer ONLY')
-    show = st.checkbox('Show!')
-    FRAME_WINDOW = st.image([])
-    camera = cv2.VideoCapture(0) # device 1/2
+if choice == 'Capture From Webcam':
+    cap = cv2.VideoCapture(0)  # device 0
+    run = st.checkbox('Show Webcam')
+    capture_button = st.checkbox('Capture')
 
-    while show:
-        _, frame = camera.read()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    captured_image = np.array(None)
+
+
+    # Check if the webcam is opened correctly
+    if not cap.isOpened():
+        raise IOError("Cannot open webcam")
+
+    FRAME_WINDOW = st.image([])
+    while run:
+        ret, frame = cap.read()        
+        # Display Webcam
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB ) #Convert color
         FRAME_WINDOW.image(frame)
-    else:
-        camera.release()
+
+        if capture_button:      
+            captured_image = frame
+            break
+
+    cap.release()
 
 elif choice=='Play Audio':
     st.write("Puppy can play music!")
